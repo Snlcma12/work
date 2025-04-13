@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="/static/css/register.css">
+    <script src="../static/js/register.js"></script>
+</head>
+<body>
+    <div class="register-container">
+        <h1>Регистрация</h1>
+        {% if error %}<p class="error">{{ error }}</p>{% endif %}
+        <form method="post">
+            <label>
+                Роль:
+                <select name="role" required onchange="showRoleFields()">
+                    <option value="">Выберите роль</option>
+                    <option value="student">Студент</option>
+                    <option value="teacher">Преподаватель</option>
+                </select>
+            </label>
+
+            <div id="groupField" class="role-field">
+                <label>
+                    Группа:
+                    <input type="text" name="group">
+                </label>
+            </div>
+
+            <div id="departmentField" class="role-field">
+                <label>
+                    Кафедра:
+                    <input type="text" name="department">
+                </label>
+            </div>
+
+            <label>
+                Логин:
+                <input type="text" name="username" required>
+            </label>
+
+            <label>
+                Пароль:
+                <input type="password" name="password" required>
+            </label>
+
+            <label>
+                Email:
+                <input type="email" name="email">
+            </label>
+
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+        <p class="login-link">Уже есть аккаунт? <a href="{{ url_for('login') }}">Войти</a></p>
+    </div>
+</body>
+</html>

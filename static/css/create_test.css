@@ -1,0 +1,116 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f9fafb;
+    margin: 0;
+    padding: 2rem;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    color: #111827;
+}
+
+.question-block {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: #ffffff;
+}
+
+.question-block label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+textarea,
+input[type="text"] {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.3rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.option-item input[type="text"] {
+    flex: 1;
+}
+
+button, .btn {
+    padding: 0.5rem 1rem;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover, .btn:hover {
+    background-color: #2563eb;
+}
+
+.add-option, .remove-option {
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+    background-color: #10b981;
+    padding: 0.3rem 0.7rem;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+
+.remove-option {
+    background-color: #ef4444;
+}
+
+.add-option:hover {
+    background-color: #059669;
+}
+
+.remove-option:hover {
+    background-color: #dc2626;
+}
+
+#addQuestion {
+    display: block;
+    margin: 2rem auto 0;
+    background-color: #6366f1;
+}
+
+@media (max-width: 600px) {
+    .option-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .option-item input[type="text"] {
+        width: 100%;
+    }
+}

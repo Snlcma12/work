@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Мои результаты</title>
+</head>
+<body>
+    <h1>Твои результаты теста</h1>
+    <table border="1">
+        <tr>
+            <th>Имя теста</th>
+            <th>Баллы</th>
+            <th>Дата</th>
+        </tr>
+        {% for result in results %}
+        <tr>
+            <td>{{ result.test_name }}</td>
+            <td>{{ result.score }}</td>
+            <td>{{ result.date.strftime('%Y-%m-%d %H:%M') }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('index') }}">Вернуться к тестам</a>
+</body>
+</html>

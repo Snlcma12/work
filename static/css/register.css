@@ -1,0 +1,105 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.register-container {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 1rem;
+    padding: 2.5rem 2rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    animation: fadeIn 0.6s ease;
+}
+
+h1 {
+    margin-bottom: 1.5rem;
+    color: #FF7F50	;
+    font-size: 2rem;
+}
+
+form label {
+    display: block;
+    text-align: left;
+    margin-bottom: 1rem;
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+form input, form select {
+    width: 100%;
+    padding: 0.7rem;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.85);
+    font-size: 1rem;
+    margin-top: 0.3rem;
+}
+
+form input:focus, form select:focus {
+    outline: none;
+    background-color: #fff;
+    box-shadow: 0 0 0 2px #fcb69f66;
+    transition: 0.2s;
+}
+
+button {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(to right, #f12711, #f5af19);
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.03);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.role-field {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+.error {
+    color: #ff4d4f;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.login-link {
+    margin-top: 1rem;
+    color: #fff;
+}
+
+.login-link a {
+    color: #FFA07A;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты теста</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .result-card {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            background-color: #fff;
+        }
+        .score-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .action-buttons {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигационная панель (как в index.html) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Тест-Система</a>
+            <!-- Остальное содержимое навбара -->
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="result-card">
+            <h2 class="text-center mb-4">Результаты теста</h2>
+            
+            <div class="score-display">
+                <span class="text-success">{{ score }}</span> баллов
+            </div>
+
+            <div class="text-center">
+                <p class="text-muted">
+                    Поздравляем, {{ username }}!<br>
+                    Вы успешно завершили тест.
+                </p>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="bi bi-house-door"></i> На главную
+                </a>
+                <a href="{{ url_for('my_results') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-list-check"></i> Все результаты
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подвал (как в index.html) -->
+    <footer class="bg-light text-center text-lg-start mt-5">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2023 Система тестирования знаний
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS и иконки -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</body>
+</html>

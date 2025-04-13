@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Тест</title>
+</head>
+<body>
+    <form method="post">
+        {% for question in questions %}
+            <fieldset>
+                <legend>{{ question.question_text }}</legend>
+                {% for option in question.options %}
+                    <label>
+                        <input type="checkbox" name="answers" value="{{ option.option_id }}">
+                        {{ option.option_text }}
+                    </label><br>
+                {% endfor %}
+            </fieldset>
+        {% endfor %}
+        <button type="submit">Завершить тест</button>
+    </form>
+</body>
+</html>
