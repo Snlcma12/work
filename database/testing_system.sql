@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Апр 13 2025 г., 22:36
+-- Время создания: Апр 15 2025 г., 18:56
 -- Версия сервера: 8.0.30
 -- Версия PHP: 8.1.9
 
@@ -34,29 +34,6 @@ CREATE TABLE `options` (
   `is_correct` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Дамп данных таблицы `options`
---
-
-INSERT INTO `options` (`option_id`, `question_id`, `option_text`, `is_correct`) VALUES
-(1, 1, 'цк', 0),
-(2, 2, '4t4w', 0),
-(3, 3, '43rt43r', 0),
-(4, 4, '2e', 0),
-(5, 5, '3кц', 0),
-(6, 6, '3у32у', 0),
-(7, 7, '3423', 1),
-(8, 8, 'Да', 1),
-(9, 8, 'Нет', 0),
-(10, 9, '2', 1),
-(11, 9, '6', 0),
-(12, 9, '3', 0),
-(13, 9, '4', 0),
-(14, 10, '34', 1),
-(15, 11, '2', 1),
-(16, 12, '232', 1),
-(17, 13, '2', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -68,25 +45,6 @@ CREATE TABLE `questions` (
   `test_id` int DEFAULT NULL,
   `question_text` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Дамп данных таблицы `questions`
---
-
-INSERT INTO `questions` (`question_id`, `test_id`, `question_text`) VALUES
-(1, 1, 'цк'),
-(2, 2, '4t4'),
-(3, 3, '435r34'),
-(4, 4, '2e'),
-(5, 5, '3ку'),
-(6, 6, '23у'),
-(7, 7, '32432'),
-(8, 8, 'Арбуз - это ягода?'),
-(9, 9, '23'),
-(10, 10, '343'),
-(11, 11, '23421'),
-(12, 12, '13'),
-(13, 13, '2');
 
 -- --------------------------------------------------------
 
@@ -115,25 +73,6 @@ CREATE TABLE `tests` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Дамп данных таблицы `tests`
---
-
-INSERT INTO `tests` (`test_id`, `title`, `description`, `created_at`) VALUES
-(1, '123', '3кц', '2025-04-12 06:38:36'),
-(2, '435r', '43tr4', '2025-04-12 06:42:14'),
-(3, '3r43', '435r43', '2025-04-12 06:50:30'),
-(4, '12', '2e', '2025-04-12 07:00:30'),
-(5, '23у', 'ц3к', '2025-04-12 07:08:56'),
-(6, '32у', '32у', '2025-04-12 07:12:34'),
-(7, '2424', '3432', '2025-04-12 07:17:13'),
-(8, 'Лучшее животное', 'Ответь на вопрос', '2025-04-12 08:48:59'),
-(9, '234e23', 'Lkz ', '2025-04-13 11:58:29'),
-(10, '232', '23234', '2025-04-13 12:43:53'),
-(11, '2432', '34324', '2025-04-13 13:01:26'),
-(12, '1212', '3234', '2025-04-13 18:55:03'),
-(13, 'ц34у3', '3242', '2025-04-13 19:32:00');
-
 -- --------------------------------------------------------
 
 --
@@ -149,16 +88,6 @@ CREATE TABLE `users` (
   `group_name` varchar(50) DEFAULT NULL,
   `department` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Дамп данных таблицы `users`
---
-
-INSERT INTO `users` (`user_id`, `username`, `password_hash`, `email`, `role`, `group_name`, `department`) VALUES
-(1, '2323', 'scrypt:32768:8:1$TdpKx3cvu6te9YWz$62cfb3317604270eeb5cb58ef20006e34d15c1e43c8e52eb354902c3022324d9376591b2e852d8372b2949f2650447f0bc133ef0238f2d2f10c8c8b59c676448', 'daniil_semenov562@mail.ru', 'student', 'Ивт-21', NULL),
-(2, 'Daniil', 'scrypt:32768:8:1$Q6WsHGfpN2aeo3BM$552c55e601f78e5fa5009af325ea3098dd89c3337859b98be06c1132e26ac7523fe4c3ac9ecde5e8e6c26ce7d03276c363861b1c52666342b4a9f56a057785d6', 'daniil_semenov562@mail.ru', 'student', 'Ивт-21', NULL),
-(3, 'Daniil1', 'scrypt:32768:8:1$pAIe4Kth5vsCdCRa$f504d923edc427b963fc844da64a4a7c1e18e1d0d5ee6a477ed6580db1e198d21f93e7d3d372370660e44a436b830440921d2d4093192cd4808faa78dc2f69d5', 'Sdanil562@outlook.com', 'teacher', NULL, 'Информационная безопасность'),
-(4, 'Daniil3', 'scrypt:32768:8:1$37DUFPWUmzdu6NTP$3e3180e6add42e52916c550bb7d0547b51b2d46a25dba9075c618d1b59a4f23d847ff552b77f6e2548488d42e6b55cd75b92d1f79b713c60214f0e463e53898a', 'daniil_semenov563@mail.ru', 'teacher', NULL, 'Информационная безопасность');
 
 --
 -- Индексы сохранённых таблиц
@@ -219,7 +148,7 @@ ALTER TABLE `questions`
 -- AUTO_INCREMENT для таблицы `results`
 --
 ALTER TABLE `results`
-  MODIFY `result_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `result_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT для таблицы `tests`
@@ -231,7 +160,7 @@ ALTER TABLE `tests`
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц

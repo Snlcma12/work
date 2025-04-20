@@ -5,8 +5,7 @@ from functools import wraps
 from config import DB_CONFIG
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-123'  # Замените на реальный секретный ключ
-
+app.secret_key = '40b5ab78b31a19cd5f003f8be1f011597caa3b267fa5af9e73513f77ca34509c'  
 def get_db_connection():
     return mysql.connector.connect(**DB_CONFIG)
 
@@ -40,11 +39,28 @@ def register():
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
         email = request.form.get('email', '').strip()
+        role = request.form.get('role', '').strip()
+        group = request.form.get('group', '').strip()
+        department = request.form.get('department', '').strip()
 
-        if not username or not password:
-            flash('Логин и пароль обязательны для заполнения', 'danger')
+        # Проверка обязательных полей
+        if not username or not password or not role:
+            flash('Логин, пароль и роль обязательны для заполнения', 'danger')
             return redirect(url_for('register'))
-
+        
+        # Валидация роли
+        if role not in ('student', 'teacher'):
+            flash('Некорректная роль', 'danger')
+            return redirect(url_for('register'))
+        
+        # Проверка группы/кафедры в зависимости от роли
+        if role == 'student' and not group:
+            flash('Для студента необходимо указать группу', 'danger')
+            return redirect(url_for('register'))
+        if role == 'teacher' and not department:
+            flash('Для преподавателя необходимо указать кафедру', 'danger')
+            return redirect(url_for('register'))
+        
         if len(username) > 50:
             flash('Логин слишком длинный (максимум 50 символов)', 'danger')
             return redirect(url_for('register'))
@@ -58,9 +74,12 @@ def register():
                 return redirect(url_for('register'))
 
             password_hash = generate_password_hash(password)
+            # Обновленный INSERT с учетом роли и группы/кафедры
             cursor.execute(
-                "INSERT INTO users (username, password_hash, email) VALUES (%s, %s, %s)",
-                (username, password_hash, email)
+                """INSERT INTO users 
+                (username, password_hash, email, role, group_name, department) 
+                VALUES (%s, %s, %s, %s, %s, %s)""",
+                (username, password_hash, email, role, group or None, department or None)
             )
             conn.commit()
             flash('Регистрация успешна! Теперь вы можете войти', 'success')
@@ -124,10 +143,16 @@ def take_test(test_id):
                 return redirect(url_for('take_test', test_id=test_id))
 
             for option_id in answers:
-                cursor.execute("SELECT is_correct FROM options WHERE option_id = %s", (option_id,))
+                cursor.execute("""
+                    SELECT o.is_correct, q.score
+                    FROM options o
+                    JOIN questions q ON o.question_id = q.question_id
+                    WHERE o.option_id = %s
+                 """, (option_id,))
                 result = cursor.fetchone()
-                if result and result[0]:
-                    score += 1
+                if result and result[0]:  # result[0] — is_correct
+                    score += result[1]    # result[1] — score
+
 
             # Сохранение результата
             cursor.execute(
@@ -153,7 +178,7 @@ def take_test(test_id):
     cursor = conn.cursor(dictionary=True)
     try:
         # Проверка существования теста
-        cursor.execute("SELECT title AS test_name FROM tests WHERE test_id = %s", (test_id,))
+        cursor.execute("SELECT title AS test_name, description FROM tests WHERE test_id = %s", (test_id,))
         test = cursor.fetchone()
         if not test:
             flash('Тест не найден', 'danger')
@@ -176,6 +201,7 @@ def take_test(test_id):
             'test.html',
             test_id=test_id,
             test_name=test['test_name'],
+            
             questions=questions
         )
     except Exception as e:
@@ -236,9 +262,10 @@ def create_test():
 
             # Сохраняем вопросы
             for q_idx, question in enumerate(request.form.getlist('question')):
+                score = request.form.get(f'score[{q_idx}]', 1, type=int)
                 cursor.execute(
-                    "INSERT INTO questions (test_id, question_text) VALUES (%s, %s)",
-                    (test_id, question)
+                    "INSERT INTO questions (test_id, question_text, score) VALUES (%s, %s, %s)",
+                    (test_id, question, score)
                 )
                 question_id = cursor.lastrowid
 

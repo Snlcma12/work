@@ -29,8 +29,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             newQuestion.querySelectorAll('input, textarea').forEach(input => {
-                input.name = input.name.replace(/\[\d+\]/g, `[${newIndex}]`);
-                input.value = '';
+                if (input.name) {
+                    input.name = input.name.replace(/\[\d+\]/g, `[${newIndex}]`);
+                }
+                if (input.type === 'checkbox') {
+                    input.checked = false;
+                } else if (input.type === 'number') {
+                    input.value = '1'; // значение по умолчанию для балла
+                } else {
+                    input.value = '';
+                }
             });
             
             newQuestion.querySelectorAll('[type="checkbox"]').forEach(cb => cb.checked = false);

@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Тест</title>
+    <title>Тест: {{ test_name }}</title>
 </head>
 <body>
+    <h1>{{ test_name }}</h1>
+    {% if test_description %}
+        <div class="test-description">
+            <p>{{ test_description }}</p>
+        </div>
+    {% endif %}
+    
     <form method="post">
         {% for question in questions %}
             <fieldset>
                 <legend>{{ question.question_text }}</legend>
+                <input type="hidden" name="question_ids" value="{{ question.question_id }}">
                 {% for option in question.options %}
                     <label>
                         <input type="checkbox" name="answers" value="{{ option.option_id }}">
