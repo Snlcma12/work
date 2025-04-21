@@ -2,29 +2,41 @@
 <html>
 <head>
     <title>Тест: {{ test_name }}</title>
+    <link rel="stylesheet" href="/static/css/test.css">
 </head>
 <body>
-    <h1>{{ test_name }}</h1>
-    {% if test_description %}
-        <div class="test-description">
-            <p>{{ test_description }}</p>
+    <div class="container">
+        <div class="test-header">
+            <h1>{{ test_name }}</h1>
+            {% if test_description %}
+                <div class="test-description">
+                    <div class="description-icon">📝</div>
+                    <p>{{ test_description }}</p>
+                </div>
+            {% endif %}
         </div>
-    {% endif %}
-    
-    <form method="post">
-        {% for question in questions %}
-            <fieldset>
-                <legend>{{ question.question_text }}</legend>
-                <input type="hidden" name="question_ids" value="{{ question.question_id }}">
-                {% for option in question.options %}
-                    <label>
-                        <input type="checkbox" name="answers" value="{{ option.option_id }}">
-                        {{ option.option_text }}
-                    </label><br>
-                {% endfor %}
-            </fieldset>
-        {% endfor %}
-        <button type="submit">Завершить тест</button>
-    </form>
+
+        <form method="post" class="test-content">
+            {% for question in questions %}
+                <div class="question-card">
+                    <div class="question-title">
+                        <span>Вопрос {{ loop.index }}</span>
+                        <h3>{{ question.question_text }}</h3>
+                    </div>
+                    <input type="hidden" name="question_ids" value="{{ question.question_id }}">
+                    <div class="options-list">
+                        {% for option in question.options %}
+                            <label class="option-item">
+                                <input type="checkbox" name="answers" value="{{ option.option_id }}">
+                                <span class="custom-checkbox"></span>
+                                <span class="option-text">{{ option.option_text }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+            <button type="submit" class="submit-button">Завершить тест →</button>
+        </form>
+    </div>
 </body>
 </html>

@@ -1,0 +1,160 @@
+/* Основные стили */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f9fafb;
+    margin: 0;
+    padding: 2rem;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Шапка теста */
+.test-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.test-header h1 {
+    color: #111827;
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+}
+
+.test-description {
+    background: #f3f4f6;
+    padding: 1.5rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: start;
+    gap: 1rem;
+    text-align: left;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.description-icon {
+    font-size: 1.8rem;
+    margin-top: 0.3rem;
+}
+
+.test-description p {
+    margin: 0;
+    font-size: 1rem;
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+/* Карточка с вопросом */
+.question-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.question-title {
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.question-title span {
+    display: block;
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.question-title h3 {
+    margin: 0;
+    color: #111827;
+    font-size: 1.2rem;
+}
+
+/* Варианты ответов */
+.options-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.option-item:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+}
+
+.custom-checkbox {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 5px;
+    margin-right: 1rem;
+    position: relative;
+}
+
+input[type="checkbox"]:checked + .custom-checkbox {
+    background: #3b82f6;
+    border-color: #3b82f6;
+}
+
+input[type="checkbox"]:checked + .custom-checkbox::after {
+    content: "✓";
+    color: white;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+input[type="checkbox"] {
+    display: none;
+}
+
+/* Кнопка отправки */
+.submit-button {
+    background: #3b82f6;
+    color: white;
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: block;
+    margin: 2rem auto 0;
+    transition: background 0.3s;
+}
+
+.submit-button:hover {
+    background: #2563eb;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+
+    .question-card {
+        padding: 1rem;
+    }
+
+    .option-item {
+        padding: 0.8rem;
+    }
+}
