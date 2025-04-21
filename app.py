@@ -23,7 +23,14 @@ def index():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     try:
-        cursor.execute("SELECT test_id, title AS test_name FROM tests")
+        if 'role' in session and session['role'] == 'student':
+            cursor.execute("""
+                SELECT test_id, title AS test_name 
+                FROM tests 
+                WHERE group_name = %s OR group_name IS NULL
+            """, (session.get('group_name'),))
+        else:
+            cursor.execute("SELECT test_id, title AS test_name FROM tests")
         tests = cursor.fetchall()
         return render_template('index.html', tests=tests)
     except Exception as e:
@@ -109,6 +116,8 @@ def login():
             if user and check_password_hash(user['password_hash'], password):
                 session['user_id'] = user['user_id']
                 session['username'] = user['username']
+                session['role'] = user['role']
+                session['group_name'] = user['group_name']
                 flash('Вход выполнен успешно!', 'success')
                 next_page = request.args.get('next') or url_for('index')
                 return redirect(next_page)
@@ -120,6 +129,16 @@ def login():
             conn.close()
 
     return render_template('login.html')
+
+def teacher_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get('role') != 'teacher':
+            flash('Доступ запрещен: только для преподавателей.', 'danger')
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 @app.route('/logout')
 def logout():
@@ -247,6 +266,7 @@ def my_results():
 
 @app.route('/create-test', methods=['GET', 'POST'])
 @login_required
+@teacher_required
 def create_test():
     if request.method == 'POST':
         conn = get_db_connection()
@@ -255,8 +275,10 @@ def create_test():
         try:
             # Сохраняем тест
             cursor.execute(
-                "INSERT INTO tests (title, description) VALUES (%s, %s)",
-                (request.form['title'], request.form['description'])
+                "INSERT INTO tests (title, description, group_name) VALUES (%s, %s, %s)",
+                (request.form['title'], 
+                request.form['description'],
+                request.form['group_name'])  # Указываем группу
             )
             test_id = cursor.lastrowid
 
