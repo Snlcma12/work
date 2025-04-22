@@ -38,5 +38,17 @@
             <button type="submit" class="submit-button">Завершить тест →</button>
         </form>
     </div>
+    <div id="timer" class="alert alert-info mb-4" style="display: none;">
+        Осталось времени: <span id="time">00:00</span>
+    </div>
+    
+    <!-- Скрытый элемент для передачи данных -->
+    <div id="timer-data" 
+        data-time-limit="{{ test['time_limit'] if test['time_limit'] else 0 }}" 
+        style="display: none;">
+    </div>
+    
+    <!-- Подключение скрипта -->
+    <script src="{{ url_for('static', filename='js/timer.js') }}"></script>
 </body>
 </html>

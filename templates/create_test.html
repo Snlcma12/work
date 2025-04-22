@@ -27,6 +27,20 @@
                         <input type="text" class="form-control" name="group_name" required>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label">Количество попыток (0 - без ограничений)</label>
+                        <input type="number" class="form-control" name="attempts" min="0" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Лимит времени (минут, 0 - без ограничения)</label>
+                        <input type="number" class="form-control" name="time_limit" min="0" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Доступен до</label>
+                        <input type="datetime-local" class="form-control" name="available_until">
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">Вопрос 1</label>
                         <input type="text" class="form-control" name="question" required>
                     </div>

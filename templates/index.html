@@ -99,6 +99,17 @@
                             <div class="test-card card">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ test.test_name }}</h5>
+                                    {% if test.time_limit is not none and test.time_limit > 0 %}
+                                    <p class="small text-muted">Лимит времени: {{ test.time_limit }} мин.</p>
+                                    {% endif %}
+                                    
+                                    {% if test.attempts_allowed is not none and test.attempts_allowed > 0 %}
+                                    <p class="small text-muted">Попыток: {{ test.attempts_allowed }}</p>
+                                    {% endif %}
+                                    
+                                    {% if test.available_until %}
+                                    <p class="small text-muted">Доступен до: {{ test.available_until.strftime('%d.%m.%Y %H:%M') }}</p>
+                                    {% endif %}
                                     <p class="card-text">Проверьте свои знания по этой теме</p>
                                     {% if 'username' in session %}
                                         <a href="{{ url_for('take_test', test_id=test.test_id) }}" class="btn btn-primary">

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash 
 from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
+from datetime import datetime
 from functools import wraps
 from config import DB_CONFIG
 
@@ -25,12 +26,26 @@ def index():
     try:
         if 'role' in session and session['role'] == 'student':
             cursor.execute("""
-                SELECT test_id, title AS test_name 
+                SELECT 
+                    test_id, 
+                    title AS test_name,
+                    attempts_allowed,
+                    time_limit,
+                    available_until 
                 FROM tests 
                 WHERE group_name = %s OR group_name IS NULL
             """, (session.get('group_name'),))
         else:
-            cursor.execute("SELECT test_id, title AS test_name FROM tests")
+            # Для преподавателей и других ролей выбираем те же поля
+            cursor.execute("""
+                SELECT 
+                    test_id, 
+                    title AS test_name,
+                    attempts_allowed,
+                    time_limit,
+                    available_until 
+                FROM tests
+            """)
         tests = cursor.fetchall()
         return render_template('index.html', tests=tests)
     except Exception as e:
@@ -45,7 +60,7 @@ def register():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
-        email = request.form.get('email', '').strip()
+        email = request.form.get('email', '').strip() or None  # Сохраняем пустую почту как None
         role = request.form.get('role', '').strip()
         group = request.form.get('group', '').strip()
         department = request.form.get('department', '').strip()
@@ -55,6 +70,11 @@ def register():
             flash('Логин, пароль и роль обязательны для заполнения', 'danger')
             return redirect(url_for('register'))
         
+        # Валидация длины пароля
+        if len(password) < 8:
+            flash('Пароль должен содержать не менее 8 символов', 'danger')
+            return redirect(url_for('register'))
+
         # Валидация роли
         if role not in ('student', 'teacher'):
             flash('Некорректная роль', 'danger')
@@ -72,16 +92,23 @@ def register():
             flash('Логин слишком длинный (максимум 50 символов)', 'danger')
             return redirect(url_for('register'))
 
-        conn = get_db_connection()
+        conn = get_db_connection()  # Перемещаем подключение БД выше
         cursor = conn.cursor()
         try:
+            # Проверка уникальности логина
             cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
             if cursor.fetchone():
                 flash('Этот логин уже занят', 'danger')
                 return redirect(url_for('register'))
 
+            # Проверка уникальности почты (если email указан)
+            if email:
+                cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+                if cursor.fetchone():
+                    flash('Эта почта уже используется', 'danger')
+                    return redirect(url_for('register'))
+
             password_hash = generate_password_hash(password)
-            # Обновленный INSERT с учетом роли и группы/кафедры
             cursor.execute(
                 """INSERT INTO users 
                 (username, password_hash, email, role, group_name, department) 
@@ -149,16 +176,57 @@ def logout():
 @app.route('/test/<int:test_id>', methods=['GET', 'POST'])
 @login_required
 def take_test(test_id):
-    if request.method == 'POST':
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        try:
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    try:
+        # Получаем полные данные теста
+        cursor.execute("""
+            SELECT 
+                test_id, 
+                title, 
+                description, 
+                attempts_allowed, 
+                time_limit, 
+                available_until 
+            FROM tests 
+            WHERE test_id = %s
+            AND (available_until IS NULL OR available_until >= NOW())
+        """, (test_id,))
+        test = cursor.fetchone()
+
+        # Проверка существования теста
+        if not test:
+            flash('Тест не найден или срок его действия истек', 'danger')
+            return redirect(url_for('index'))
+
+        # Проверка количества попыток
+        if test['attempts_allowed'] > 0:
+            cursor.execute("""
+                SELECT COUNT(*) AS attempts 
+                FROM results 
+                WHERE test_id = %s AND user_id = %s
+            """, (test_id, session['user_id']))
+            attempts = cursor.fetchone()['attempts']
+            
+            if attempts >= test['attempts_allowed']:
+                flash('Превышено допустимое количество попыток', 'danger')
+                return redirect(url_for('index'))
+
+        # Обработка отправки теста
+        if request.method == 'POST':
+            result_id = session.get('current_result_id')
+            
+            if not result_id:
+                flash('Сессия теста не найдена', 'danger')
+                return redirect(url_for('index'))
+
             # Подсчет баллов
             score = 0
             answers = request.form.getlist('answers')
             
             if not answers:
-                flash('Пожалуйста, выберите хотя бы один ответ', 'warning')
+                flash('Вы не ответили ни на один вопрос', 'warning')
                 return redirect(url_for('take_test', test_id=test_id))
 
             for option_id in answers:
@@ -167,65 +235,70 @@ def take_test(test_id):
                     FROM options o
                     JOIN questions q ON o.question_id = q.question_id
                     WHERE o.option_id = %s
-                 """, (option_id,))
+                """, (option_id,))
                 result = cursor.fetchone()
-                if result and result[0]:  # result[0] — is_correct
-                    score += result[1]    # result[1] — score
+                
+                if result and result['is_correct']:
+                    score += result['score']
 
-
-            # Сохранение результата
-            cursor.execute(
-                """INSERT INTO results 
-                (user_id, test_id, score) 
-                VALUES (%s, %s, %s)""",
-                (session['user_id'], test_id, score)
-            )
+            # Обновление результата
+            cursor.execute("""
+                UPDATE results 
+                SET score = %s, 
+                    end_time = NOW()
+                WHERE result_id = %s
+            """, (score, result_id))
+            
+            session.pop('current_result_id', None)
             conn.commit()
             
             flash(f'Тест завершен! Ваш результат: {score}', 'success')
-            return redirect(url_for('test_results', test_id=test_id, score=score))
-        except Exception as e:
-            conn.rollback()
-            flash(f'Ошибка при сохранении результатов: {str(e)}', 'danger')
-            return redirect(url_for('take_test', test_id=test_id))
-        finally:
-            cursor.close()
-            conn.close()
+            return redirect(url_for('test_results', test_id=test_id))
 
-    # GET запрос - отображение теста
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    try:
-        # Проверка существования теста
-        cursor.execute("SELECT title AS test_name, description FROM tests WHERE test_id = %s", (test_id,))
-        test = cursor.fetchone()
-        if not test:
-            flash('Тест не найден', 'danger')
-            return redirect(url_for('index'))
-
-        # Получение вопросов и вариантов ответов
-        cursor.execute("SELECT question_id, question_text FROM questions WHERE test_id = %s", (test_id,))
-        questions = cursor.fetchall()
-        
-        for question in questions:
+        # Обработка GET запроса (начало теста)
+        if request.method == 'GET':
+            # Создаем новую запись о попытке
             cursor.execute("""
-                SELECT option_id, option_text 
-                FROM options 
-                WHERE question_id = %s
-                ORDER BY option_id
-            """, (question['question_id'],))
-            question['options'] = cursor.fetchall()
-
-        return render_template(
-            'test.html',
-            test_id=test_id,
-            test_name=test['test_name'],
+                INSERT INTO results 
+                (user_id, test_id, score, start_time)  # Добавлено поле score
+                VALUES (%s, %s, 0, NOW())             # Установлено временное значение 0
+            """, (session['user_id'], test_id))
+            conn.commit()
             
-            questions=questions
-        )
-    except Exception as e:
-        flash(f'Ошибка загрузки теста: {str(e)}', 'danger')
+            session['current_result_id'] = cursor.lastrowid
+
+            # Получаем вопросы и варианты ответов
+            cursor.execute("""
+                SELECT question_id, question_text 
+                FROM questions 
+                WHERE test_id = %s
+            """, (test_id,))
+            questions = cursor.fetchall()
+            
+            for question in questions:
+                cursor.execute("""
+                    SELECT option_id, option_text 
+                    FROM options 
+                    WHERE question_id = %s
+                    ORDER BY option_id
+                """, (question['question_id'],))
+                question['options'] = cursor.fetchall()
+
+            return render_template(
+                'test.html',
+                test=test,
+                questions=questions
+            )
+
+    except mysql.connector.Error as err:
+        conn.rollback()
+        flash(f'Ошибка базы данных: {err}', 'danger')
         return redirect(url_for('index'))
+        
+    except Exception as e:
+        flash(f'Ошибка: {str(e)}', 'danger')
+        return redirect(url_for('index'))
+        
     finally:
         cursor.close()
         conn.close()
@@ -273,12 +346,20 @@ def create_test():
         cursor = conn.cursor()
         
         try:
-            # Сохраняем тест
+            available_until = request.form['available_until'] or None
+            if available_until:
+                available_until = datetime.strptime(available_until, '%Y-%m-%dT%H:%M')
+
             cursor.execute(
-                "INSERT INTO tests (title, description, group_name) VALUES (%s, %s, %s)",
-                (request.form['title'], 
-                request.form['description'],
-                request.form['group_name'])  # Указываем группу
+                """INSERT INTO tests 
+                (title, description, group_name, attempts_allowed, time_limit, available_until)
+                VALUES (%s, %s, %s, %s, %s, %s)""",
+                (request.form['title'],
+                 request.form['description'],
+                 request.form['group_name'],
+                 request.form['attempts'],
+                 request.form['time_limit'],
+                 available_until)
             )
             test_id = cursor.lastrowid
 
