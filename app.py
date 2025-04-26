@@ -202,10 +202,11 @@ def take_test(test_id):
 
         # Проверка количества попыток
         if test['attempts_allowed'] > 0:
+            # В разделе проверки попыток замените запрос:
             cursor.execute("""
                 SELECT COUNT(*) AS attempts 
                 FROM results 
-                WHERE test_id = %s AND user_id = %s
+                WHERE test_id = %s AND user_id = %s AND end_time IS NOT NULL
             """, (test_id, session['user_id']))
             attempts = cursor.fetchone()['attempts']
             
@@ -306,13 +307,32 @@ def take_test(test_id):
 @app.route('/test/<int:test_id>/results')
 @login_required
 def test_results(test_id):
-    score = request.args.get('score', 0)
-    return render_template(
-        'test_results.html',
-        score=score,
-        test_id=test_id,
-        username=session.get('username')
-    )
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("""
+            SELECT score 
+            FROM results 
+            WHERE user_id = %s 
+            AND test_id = %s 
+            ORDER BY end_time DESC 
+            LIMIT 1
+        """, (session['user_id'], test_id))
+        result = cursor.fetchone()
+        score = result['score'] if result else 0
+        
+        return render_template(
+            'test_results.html',
+            score=score,
+            test_id=test_id,
+            username=session.get('username')
+        )
+    except Exception as e:
+        flash(f'Ошибка загрузки результатов: {str(e)}', 'danger')
+        return redirect(url_for('index'))
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.route('/my-results')
 @login_required
@@ -337,6 +357,38 @@ def my_results():
         cursor.close()
         conn.close()
 
+@app.route('/teacher/results')
+@login_required
+@teacher_required
+def teacher_results():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        # Получаем результаты по тестам, созданным текущим преподавателем
+        cursor.execute("""
+            SELECT 
+                u.username AS student_name,
+                t.title AS test_name,
+                r.score,
+                r.date,
+                t.group_name,
+                r.time_spent
+            FROM results r
+            JOIN users u ON r.user_id = u.user_id
+            JOIN tests t ON r.test_id = t.test_id
+            WHERE t.created_by = %s
+            ORDER BY r.date DESC
+        """, (session['user_id'],))
+        
+        results = cursor.fetchall()
+        return render_template('teacher_results.html', results=results)
+    except Exception as e:
+        flash(f'Ошибка загрузки результатов: {str(e)}', 'danger')
+        return redirect(url_for('index'))
+    finally:
+        cursor.close()
+        conn.close()
+
 @app.route('/create-test', methods=['GET', 'POST'])
 @login_required
 @teacher_required
@@ -352,14 +404,17 @@ def create_test():
 
             cursor.execute(
                 """INSERT INTO tests 
-                (title, description, group_name, attempts_allowed, time_limit, available_until)
-                VALUES (%s, %s, %s, %s, %s, %s)""",
-                (request.form['title'],
-                 request.form['description'],
-                 request.form['group_name'],
-                 request.form['attempts'],
-                 request.form['time_limit'],
-                 available_until)
+                (title, description, group_name, attempts_allowed, time_limit, available_until, created_by)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)""",  # 7 полей
+                (
+                request.form['title'],
+                request.form['description'],
+                request.form['group_name'],
+                request.form['attempts'],    
+                request.form['time_limit'],   
+                available_until,              
+                session['user_id']            
+                )
             )
             test_id = cursor.lastrowid
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Апр 22 2025 г., 22:27
+-- Время создания: Апр 26 2025 г., 20:05
 -- Версия сервера: 8.0.30
 -- Версия PHP: 8.1.9
 
@@ -63,7 +63,9 @@ INSERT INTO `options` (`option_id`, `question_id`, `option_text`, `is_correct`) 
 (39, 35, '1', 1),
 (40, 36, 'Слово', 1),
 (41, 37, 'Слово', 1),
-(42, 38, 'авау', 1);
+(42, 38, 'авау', 1),
+(43, 39, '3', 1),
+(44, 40, '4', 1);
 
 -- --------------------------------------------------------
 
@@ -107,7 +109,9 @@ INSERT INTO `questions` (`question_id`, `test_id`, `question_text`, `score`) VAL
 (35, 28, '22', 1),
 (36, 29, 'куенук5н5', 1),
 (37, 30, 'куенук5н5', 1),
-(38, 31, 'куенук5н5', 1);
+(38, 31, 'куенук5н5', 1),
+(39, 32, '3к3', 1),
+(40, 33, '43543', 9);
 
 -- --------------------------------------------------------
 
@@ -145,7 +149,15 @@ INSERT INTO `results` (`result_id`, `user_id`, `test_id`, `score`, `date`, `star
 (19, 8, 27, 1, '2025-04-21 14:15:55', '2025-04-22 16:58:08', NULL),
 (20, 16, 31, 1, '2025-04-22 19:21:08', '2025-04-22 22:21:08', '2025-04-22 22:21:11'),
 (21, 16, 31, 0, '2025-04-22 19:21:26', '2025-04-22 22:21:26', NULL),
-(22, 16, 30, 0, '2025-04-22 19:21:41', '2025-04-22 22:21:41', NULL);
+(22, 16, 30, 0, '2025-04-22 19:21:41', '2025-04-22 22:21:41', NULL),
+(23, 8, 30, 0, '2025-04-26 16:16:50', '2025-04-26 19:16:50', NULL),
+(24, 8, 32, 0, '2025-04-26 16:17:24', '2025-04-26 19:17:24', NULL),
+(25, 7, 32, 0, '2025-04-26 16:18:26', '2025-04-26 19:18:26', NULL),
+(26, 7, 32, 1, '2025-04-26 16:24:18', '2025-04-26 19:24:18', '2025-04-26 19:24:20'),
+(27, 7, 30, 1, '2025-04-26 16:24:31', '2025-04-26 19:24:31', '2025-04-26 19:24:33'),
+(28, 15, 32, 1, '2025-04-26 16:30:42', '2025-04-26 19:30:42', '2025-04-26 19:30:44'),
+(29, 15, 30, 1, '2025-04-26 16:30:58', '2025-04-26 19:30:58', '2025-04-26 19:30:59'),
+(30, 15, 33, 9, '2025-04-26 16:44:51', '2025-04-26 19:44:51', '2025-04-26 19:44:52');
 
 -- --------------------------------------------------------
 
@@ -161,32 +173,35 @@ CREATE TABLE `tests` (
   `group_name` varchar(50) DEFAULT NULL,
   `attempts_allowed` int DEFAULT NULL,
   `time_limit` int DEFAULT NULL COMMENT 'В минутах',
-  `available_until` datetime DEFAULT NULL
+  `available_until` datetime DEFAULT NULL,
+  `created_by` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Дамп данных таблицы `tests`
 --
 
-INSERT INTO `tests` (`test_id`, `title`, `description`, `created_at`, `group_name`, `attempts_allowed`, `time_limit`, `available_until`) VALUES
-(14, '123', '43е4е', '2025-04-20 08:07:14', NULL, NULL, NULL, NULL),
-(15, '123', '2342', '2025-04-20 08:07:39', NULL, NULL, NULL, NULL),
-(16, '12', '3432', '2025-04-20 08:16:57', NULL, NULL, NULL, NULL),
-(17, '3543', '343', '2025-04-20 08:23:39', NULL, NULL, NULL, NULL),
-(18, '4325345', 'оатуыалту', '2025-04-20 08:24:35', NULL, NULL, NULL, NULL),
-(19, '547645', '454353', '2025-04-20 08:27:59', NULL, NULL, NULL, NULL),
-(20, '232', '232', '2025-04-20 08:28:34', NULL, NULL, NULL, NULL),
-(21, '1323', '232', '2025-04-20 08:29:05', NULL, NULL, NULL, NULL),
-(22, '12', '232', '2025-04-20 09:30:56', NULL, NULL, NULL, NULL),
-(23, '45', '4534', '2025-04-20 09:31:22', NULL, NULL, NULL, NULL),
-(24, '32434', '3432', '2025-04-20 09:31:44', NULL, NULL, NULL, NULL),
-(25, 'ewr', '2321', '2025-04-20 09:44:11', NULL, NULL, NULL, NULL),
-(26, 'Тест', 'уцак', '2025-04-21 13:49:23', 'Ивт-21', NULL, NULL, NULL),
-(27, 'укпуц', 'уаыфуа', '2025-04-21 14:15:40', 'Ивт-21', NULL, NULL, NULL),
-(28, '1', '1', '2025-04-21 14:19:47', '1', NULL, NULL, NULL),
-(29, '234к54', '3цкц4ецуе', '2025-04-22 18:52:06', 'Ивт-21', 2, 0, '2025-04-05 21:51:00'),
-(30, 'ц3ук', '', '2025-04-22 19:02:36', 'Ивт-21', 1, 0, NULL),
-(31, 'уаццццццц', 'цавй', '2025-04-22 19:18:11', 'Ивт-21', 2, 59, '2025-04-23 22:18:00');
+INSERT INTO `tests` (`test_id`, `title`, `description`, `created_at`, `group_name`, `attempts_allowed`, `time_limit`, `available_until`, `created_by`) VALUES
+(14, '123', '43е4е', '2025-04-20 08:07:14', NULL, NULL, NULL, NULL, NULL),
+(15, '123', '2342', '2025-04-20 08:07:39', NULL, NULL, NULL, NULL, NULL),
+(16, '12', '3432', '2025-04-20 08:16:57', NULL, NULL, NULL, NULL, NULL),
+(17, '3543', '343', '2025-04-20 08:23:39', NULL, NULL, NULL, NULL, NULL),
+(18, '4325345', 'оатуыалту', '2025-04-20 08:24:35', NULL, NULL, NULL, NULL, NULL),
+(19, '547645', '454353', '2025-04-20 08:27:59', NULL, NULL, NULL, NULL, NULL),
+(20, '232', '232', '2025-04-20 08:28:34', NULL, NULL, NULL, NULL, NULL),
+(21, '1323', '232', '2025-04-20 08:29:05', NULL, NULL, NULL, NULL, NULL),
+(22, '12', '232', '2025-04-20 09:30:56', NULL, NULL, NULL, NULL, NULL),
+(23, '45', '4534', '2025-04-20 09:31:22', NULL, NULL, NULL, NULL, NULL),
+(24, '32434', '3432', '2025-04-20 09:31:44', NULL, NULL, NULL, NULL, NULL),
+(25, 'ewr', '2321', '2025-04-20 09:44:11', NULL, NULL, NULL, NULL, NULL),
+(26, 'Тест', 'уцак', '2025-04-21 13:49:23', 'Ивт-21', NULL, NULL, NULL, NULL),
+(27, 'укпуц', 'уаыфуа', '2025-04-21 14:15:40', 'Ивт-21', NULL, NULL, NULL, NULL),
+(28, '1', '1', '2025-04-21 14:19:47', '1', NULL, NULL, NULL, NULL),
+(29, '234к54', '3цкц4ецуе', '2025-04-22 18:52:06', 'Ивт-21', 2, 0, '2025-04-05 21:51:00', NULL),
+(30, 'ц3ук', '', '2025-04-22 19:02:36', 'Ивт-21', 1, 0, NULL, NULL),
+(31, 'уаццццццц', 'цавй', '2025-04-22 19:18:11', 'Ивт-21', 2, 59, '2025-04-23 22:18:00', NULL),
+(32, 'укпек', 'уцацу', '2025-04-26 16:17:21', 'Ивт-21', 1, 0, NULL, NULL),
+(33, '34535', '43ц534', '2025-04-26 16:44:42', 'Ивт-21', 1, 0, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -246,7 +261,8 @@ ALTER TABLE `results`
 -- Индексы таблицы `tests`
 --
 ALTER TABLE `tests`
-  ADD PRIMARY KEY (`test_id`);
+  ADD PRIMARY KEY (`test_id`),
+  ADD KEY `created_by` (`created_by`);
 
 --
 -- Индексы таблицы `users`
@@ -264,25 +280,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `options`
 --
 ALTER TABLE `options`
-  MODIFY `option_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `option_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT для таблицы `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `question_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `question_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT для таблицы `results`
 --
 ALTER TABLE `results`
-  MODIFY `result_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `result_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT для таблицы `tests`
 --
 ALTER TABLE `tests`
-  MODIFY `test_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `test_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
@@ -312,6 +328,13 @@ ALTER TABLE `questions`
 ALTER TABLE `results`
   ADD CONSTRAINT `results_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `results_ibfk_2` FOREIGN KEY (`test_id`) REFERENCES `tests` (`test_id`);
+
+--
+-- Ограничения внешнего ключа таблицы `tests`
+--
+ALTER TABLE `tests`
+  ADD CONSTRAINT `tests_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `tests_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `users` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
