@@ -9,6 +9,23 @@
 <body>
     <div class="register-container">
         <h1>Регистрация</h1>
+        <div class="help-icon" onclick="toggleInstruction()">
+            <img src="/static/images/help-icon.png" alt="Инструкция" title="Показать инструкцию">
+        </div>
+        <!-- Модальное окно с инструкцией -->
+        <div id="instructionModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h3>Инструкция по регистрации</h3>
+                <ol>
+                    <li>Выберите вашу роль (Студент/Преподаватель)</li>
+                    <li>Заполните все обязательные поля (отмечены *)</li>
+                    <li>Для студентов укажите группу, для преподавателей - кафедру</li>
+                    <li>Придумайте надежный пароль (не менее 8 символов)</li>
+                    <li>Нажмите "Зарегистрироваться"</li>
+                </ol>
+            </div>
+        </div>        
         {% if error %}<p class="error">{{ error }}</p>{% endif %}
         <form method="post">
             <label>

@@ -23,4 +23,22 @@ function validateForm() {
     }
     return true;
 }
+
+function toggleInstruction() {
+    const modal = document.getElementById('instructionModal');
+    modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+}
+
+function closeModal() {
+    document.getElementById('instructionModal').style.display = 'none';
+}
+
+// Закрытие модального окна при клике вне его области
+window.onclick = function(event) {
+    const modal = document.getElementById('instructionModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+
 window.onload = showRoleFields;
