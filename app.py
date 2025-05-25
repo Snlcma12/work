@@ -429,15 +429,19 @@ def create_test():
 
                 # Сохраняем варианты ответов
                 options = request.form.getlist(f'options[{q_idx}][]')
-                correct = request.form.getlist(f'correct[{q_idx}][]')
+                # Получаем список ИНДЕКСОВ правильных ответов (0-based)
+                correct_indices = [int(idx) for idx in request.form.getlist(f'correct[{q_idx}][]')]
                 
                 for opt_idx, option in enumerate(options):
+                    # Проверяем, совпадает ли текущий индекс с одним из correct_indices
+                    is_correct = opt_idx in correct_indices
                     cursor.execute(
                         """INSERT INTO options 
                         (question_id, option_text, is_correct) 
                         VALUES (%s, %s, %s)""",
-                        (question_id, option, str(opt_idx) in correct)
+                        (question_id, option, is_correct)
                     )
+
 
             conn.commit()
             flash('Тест успешно создан!', 'success')
